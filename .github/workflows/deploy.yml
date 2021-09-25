@@ -28,7 +28,7 @@ jobs:
 
       - name: deploy with wrangler
         run: |
-          'npm i @cloudflare/wrangler g' 
+          'npm i @cloudflare/wrangler -g' 
           'wrangler publish -e $DEPLOY_ENVIRONMENT'
         env:
           CF_ACCOUNT_ID: ${{secrets.CF_ACCOUNT_ID}}
