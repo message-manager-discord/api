@@ -26,8 +26,10 @@ jobs:
               echo "DEPLOY_ENVIRONMENT=staging" >> "$GITHUB_ENV"
           fi
 
-      - name: deploy using wrangler 
+      - name: install wrangler
         run: 'npm i @cloudflare/wrangler g'
+
+      - name: deploy with wrangler
         run: 'wrangler publish -e $DEPLOY_ENVIRONMENT'
         env:
           CF_ACCOUNT_ID: ${{secrets.CF_ACCOUNT_ID}}
