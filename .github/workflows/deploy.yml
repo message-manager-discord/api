@@ -16,9 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2.0.0 
       - name: install dependencies
-        run: |
-          'npm install'
-          'npm i @cloudflare/wrangler -g'
+        run: 'npm install && npm i @cloudflare/wrangler -g'
   
       - name: Set environment for branch
         run: |
