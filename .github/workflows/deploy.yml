@@ -1,0 +1,35 @@
+on:
+  push:
+    branches:
+      - main
+      - staging
+      - test-workflows
+  pull_request:
+    branches:
+      - main
+      - staging
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Deploy Cloudflare Worker
+    steps:
+      - uses: actions/checkout@v2.0.0 
+      - name: install dependencies
+        run: 'npm install'
+  
+      - name: Set environment for branch
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+              echo "DEPLOY_ENVIRONMENT=production" >> "$GITHUB_ENV"
+          else
+              echo "DEPLOY_ENVIRONMENT=staging" >> "$GITHUB_ENV"
+          fi
+
+      - name: deploy using wrangler 
+        run: 'npm i @cloudflare/wrangler g'
+        run: 'wrangler publish -e $DEPLOY_ENVIRONMENT'
+        env:
+          CF_ACCOUNT_ID: ${{secrets.CF_ACCOUNT_ID}}
+          CF_ZONE_ID: ${{secrets.CF_ZONE_ID}}
+          CF_API_TOKEN: ${{secrets.CF_API_TOKEN}}
