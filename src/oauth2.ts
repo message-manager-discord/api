@@ -199,7 +199,7 @@ const exchangeCode = async (code: string): Promise<StoredAuthToken> => {
   return {
     accessToken: tokenData.access_token,
     refreshToken: tokenData.refresh_token,
-    expiresAt: getSecondsNow() + 120, //+ tokenData.expires_in - 10 // 10 seconds to account for any possible latency
+    expiresAt: getSecondsNow() + tokenData.expires_in - 20 // 20 seconds to account for any possible latency
   }
 }
 
