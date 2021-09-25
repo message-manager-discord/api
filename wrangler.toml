@@ -2,12 +2,11 @@ name = "message-manager-api"
 type = "javascript"
 account_id = "29b251336b00cdb374a743e5d8eb2217"
 zone_id = "842312687263b75c597caff348f477b6"
-vars = { ENVIRONMENT = "dev", clientId = "760778370119761921", baseURL = "https://dev.messagemanager.xyz"}
+vars = { ENVIRONMENT = "dev", clientId = "760778370119761921", baseURL = "http://localhost:8787"}
 kv_namespaces = [ 
          { binding = "AUTH_STORE", id = "09644878207848a5ba89b44d1fa0e5e9", preview_id = "09644878207848a5ba89b44d1fa0e5e9" }
 ]
-route = "dev.messagemanager.xyz/*"
-
+workers_dev = true
 
 [build]
 command = "npm install && npm run build"
@@ -16,6 +15,7 @@ format = "service-worker"
 
 
 [env.staging]
+workers_dev = false
 vars = { ENVIRONMENT = "staging", clientId = "864044714306043905", baseURL = "https://staging.messagemanager.xyz" }
 kv_namespaces = [ 
          { binding = "AUTH_STORE", id = "ecd7547a1d714134a743a65d46d07ffa" }
@@ -26,6 +26,7 @@ routes = [
 ]
 
 [env.production]
+workers_dev = false
 vars = { ENVIRONMENT = "production", clientId = "735395698278924359", baseURL = "https://messagemanager.xyz" }
 kv_namespaces = [ 
          { binding = "AUTH_STORE", id = "b2a4ff8173064924b559a09bdc47df4d" }
