@@ -16,7 +16,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2.0.0 
       - name: install dependencies
-        run: 'npm install'
+        run: |
+          'npm install'
+          'npm i @cloudflare/wrangler -g'
   
       - name: Set environment for branch
         run: |
@@ -28,7 +30,6 @@ jobs:
 
       - name: install wrangler
         run: |
-          'npm i @cloudflare/wrangler g'
           'wrangler publish -e $DEPLOY_ENVIRONMENT'
         env:
           CF_ACCOUNT_ID: ${{secrets.CF_ACCOUNT_ID}}
