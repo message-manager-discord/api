@@ -1,7 +1,7 @@
 name = "message-manager-api"
 type = "javascript"
 account_id = "29b251336b00cdb374a743e5d8eb2217"
-zone_id = "842312687263b75c597caff348f477b6"
+zone_id = "15e5ad5555b922504aba1613c666833a"
 vars = { ENVIRONMENT = "dev", clientId = "760778370119761921", baseURL = "http://localhost:8787"}
 kv_namespaces = [ 
          { binding = "AUTH_STORE", id = "09644878207848a5ba89b44d1fa0e5e9", preview_id = "09644878207848a5ba89b44d1fa0e5e9" }
@@ -16,22 +16,22 @@ format = "service-worker"
 
 [env.staging]
 workers_dev = false
-vars = { ENVIRONMENT = "staging", clientId = "864044714306043905", baseURL = "https://staging.messagemanager.xyz" }
+vars = { ENVIRONMENT = "staging", clientId = "864044714306043905", baseURL = "https://staging.message.anothercat.me" }
 kv_namespaces = [ 
          { binding = "AUTH_STORE", id = "ecd7547a1d714134a743a65d46d07ffa" }
 ]
 routes = [
-  "staging.messagemanager.xyz/api*",
-  "staging.messagemanager.xyz/auth*"
+  "staging.message.anothercat.me/api*",
+  "staging.message.anothercat.me/auth*"
 ]
 
 [env.production]
 workers_dev = false
-vars = { ENVIRONMENT = "production", clientId = "735395698278924359", baseURL = "https://messagemanager.xyz" }
+vars = { ENVIRONMENT = "production", clientId = "735395698278924359", baseURL = "https://message.anothercat.me" }
 kv_namespaces = [ 
          { binding = "AUTH_STORE", id = "b2a4ff8173064924b559a09bdc47df4d" }
 ]
 routes = [
-  "messagemanager.xyz/api*",
-  "messagemanager.xyz/auth*"
+  "message.anothercat.me/api*",
+  "message.anothercat.me/auth*"
 ]
