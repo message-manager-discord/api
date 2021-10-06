@@ -1,7 +1,7 @@
 class CustomStatusError extends Error {
   status?: number
   request: Request
-  constructor(request: Request, message?: string, status?: number, ) {
+  constructor(request: Request, message?: string, status?: number) {
     super(message)
     this.status = status
     this.request = request

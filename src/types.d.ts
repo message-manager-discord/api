@@ -1,4 +1,4 @@
-import { Snowflake } from "discord-api-types"
+import { Snowflake } from 'discord-api-types'
 
 // set secrets with wrangler secret put {name}
 export {}
