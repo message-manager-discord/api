@@ -3,7 +3,7 @@ import {
   RESTPostOAuth2AccessTokenResult,
   RESTGetAPICurrentUserResult,
   RESTPostOAuth2RefreshTokenResult,
-  Snowflake
+  Snowflake,
 } from 'discord-api-types/v9'
 import cookie from 'cookie'
 import { getSecondsNow } from './utils'
@@ -228,9 +228,7 @@ const checkStaff = (userId: Snowflake): boolean => {
   return staffIds.includes(`${userId},`)
 }
 
-const identifyUser = async (
-  accessToken: string,
-): Promise<StoredUserData> => {
+const identifyUser = async (accessToken: string): Promise<StoredUserData> => {
   const resp = await fetch(`${DISCORD_BASE}/users/@me`, {
     method: 'GET',
     headers: {
@@ -240,9 +238,9 @@ const identifyUser = async (
   if (!resp.ok) {
     throw new Error(resp.statusText)
   }
-  const data = await resp.json() as RESTGetAPICurrentUserResult
-  
-  return {staff: checkStaff(data.id), ...data}
+  const data = (await resp.json()) as RESTGetAPICurrentUserResult
+
+  return { staff: checkStaff(data.id), ...data }
 }
 
 export const handleRedirect = async (
@@ -271,8 +269,9 @@ export const logout = (request: Request): Record<string, string> => {
   const cookieHeader = request.headers.get('Cookie')
   if (cookieHeader && cookieHeader.includes(cookieKey)) {
     return {
+      Location: finalRedirectURL,
       'Set-cookie': `${cookieKey}=""; SameSite=Lax; Path=/; Secure;`,
     }
   }
-  return {}
+  return { Location: finalRedirectURL }
 }

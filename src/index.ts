@@ -98,12 +98,14 @@ router.get('/auth/login', async (request: Request): Promise<Response> => {
 router.get(
   '/api/user',
   async (request: Request, context: Context): Promise<Response> => {
-    console.log("HELLO")
-    console.log(generateCORSHeaders({
-      origin: request.headers.get('Origin'),
-      methods: ['GET'],
-      headers: [],
-    }))
+    console.log('HELLO')
+    console.log(
+      generateCORSHeaders({
+        origin: request.headers.get('Origin'),
+        methods: ['GET'],
+        headers: [],
+      }),
+    )
     return new Response(JSON.stringify(context.user!.user), {
       headers: {
         'Content-Type': 'application/json',
@@ -111,7 +113,7 @@ router.get(
           origin: request.headers.get('Origin'),
           methods: ['GET'],
           headers: [],
-        })
+        }),
       },
     })
   },
@@ -132,6 +134,7 @@ router.get('/auth/logout', (request: Request): Response => {
   return headers
     ? new Response(null, {
         headers: headers,
+        status: 302,
       })
     : Response.redirect(url.origin)
 })
@@ -151,7 +154,7 @@ const errorHandler = (error: any): Response => {
   }
   return new Response(error.message || 'Server Error', {
     status: error.status || 500,
-    headers
+    headers,
   })
 }
 addEventListener('fetch', (event) => {
