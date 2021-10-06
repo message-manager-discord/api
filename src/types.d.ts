@@ -1,3 +1,5 @@
+import { Snowflake } from "discord-api-types"
+
 // set secrets with wrangler secret put {name}
 export {}
 
@@ -10,4 +12,6 @@ declare global {
   const AUTH_STORE: KVNamespace
   // Current environment
   const Environment: string
+  // Staff Ids, string in the form "staff-1-id,staff-2-id" etc
+  const staffIds: string
 }

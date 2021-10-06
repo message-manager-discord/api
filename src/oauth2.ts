@@ -3,6 +3,7 @@ import {
   RESTPostOAuth2AccessTokenResult,
   RESTGetAPICurrentUserResult,
   RESTPostOAuth2RefreshTokenResult,
+  Snowflake
 } from 'discord-api-types/v9'
 import cookie from 'cookie'
 import { getSecondsNow } from './utils'
@@ -49,9 +50,11 @@ interface FailedResult {
   status: false
   redirectUrl: string
 }
-
+interface StoredUserData extends RESTGetAPICurrentUserResult {
+  staff: boolean
+}
 export interface StoredUser {
-  user: RESTGetAPICurrentUserResult
+  user: StoredUserData
   auth: StoredAuthToken
 }
 
@@ -221,9 +224,13 @@ const exchangeCode = async (code: string): Promise<StoredAuthToken> => {
   }
 }
 
+const checkStaff = (userId: Snowflake): boolean => {
+  return staffIds.includes(`${userId},`)
+}
+
 const identifyUser = async (
   accessToken: string,
-): Promise<RESTGetAPICurrentUserResult> => {
+): Promise<StoredUserData> => {
   const resp = await fetch(`${DISCORD_BASE}/users/@me`, {
     method: 'GET',
     headers: {
@@ -233,7 +240,9 @@ const identifyUser = async (
   if (!resp.ok) {
     throw new Error(resp.statusText)
   }
-  return (await resp.json()) as RESTGetAPICurrentUserResult
+  const data = await resp.json() as RESTGetAPICurrentUserResult
+  
+  return {staff: checkStaff(data.id), ...data}
 }
 
 export const handleRedirect = async (
