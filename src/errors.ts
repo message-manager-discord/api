@@ -1,18 +1,20 @@
 class CustomStatusError extends Error {
   status?: number
-  constructor(message?: string, status?: number) {
+  request: Request
+  constructor(request: Request, message?: string, status?: number, ) {
     super(message)
     this.status = status
+    this.request = request
   }
 }
 class Unauthorized extends CustomStatusError {
-  constructor(message?: string) {
-    super(message || 'Unauthorized', 401)
+  constructor(request: Request, message?: string) {
+    super(request, message || 'Unauthorized', 401)
   }
 }
 class Forbidden extends CustomStatusError {
-  constructor(message?: string) {
-    super(message || 'Unauthorized', 403)
+  constructor(request: Request, message?: string) {
+    super(request, message || 'Unauthorized', 403)
   }
 }
 

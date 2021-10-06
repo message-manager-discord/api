@@ -8,6 +8,24 @@ import cookie from 'cookie'
 import { getSecondsNow } from './utils'
 import { Unauthorized } from './errors'
 
+export let finalRedirectURL: string
+export let baseURL: string
+
+switch (Environment) {
+  case 'dev':
+    finalRedirectURL = 'http://localhost:3000'
+    baseURL = 'http://localhost:8787'
+    break
+  case 'staging':
+    finalRedirectURL = 'https://staging--message.anothercat.me'
+    baseURL = 'https://auth--staging--message.anothercat.me'
+    break
+  default:
+    finalRedirectURL = 'https://message.anothercat.me'
+    baseURL = 'https://auth--message.anothercat.me'
+    break
+}
+
 const discordOauth = {
   domain: `${DISCORD_BASE}/oauth2`,
   clientId: clientId,
@@ -55,12 +73,12 @@ const verify = async (request: Request): Promise<StoredUser> => {
   const cookieHeader = request.headers.get('Cookie')
   if (cookieHeader && cookieHeader.includes(cookieKey)) {
     const cookies = cookie.parse(cookieHeader)
-    if (!cookies[cookieKey]) throw new Unauthorized()
+    if (!cookies[cookieKey]) throw new Unauthorized(request)
     const session = cookies[cookieKey]
 
     const kvData = await AUTH_STORE.get(`session-${session}`)
     if (!kvData) {
-      throw new Unauthorized()
+      throw new Unauthorized(request)
     }
     const userData = await AUTH_STORE.get(kvData)
     let parsedUserData: StoredUser
@@ -73,10 +91,10 @@ const verify = async (request: Request): Promise<StoredUser> => {
       parsedUserData.auth = await checkTokenExpiry(parsedUserData)
       return parsedUserData
     } else {
-      throw new Unauthorized()
+      throw new Unauthorized(request)
     }
   }
-  throw new Unauthorized()
+  throw new Unauthorized(request)
 }
 
 export const authorize = async (
@@ -130,7 +148,7 @@ const persistAuth = async (body: StoredAuthToken): Promise<ResponseInit> => {
   date.setDate(date.getDate() + 31)
 
   const headers = {
-    Location: '/',
+    Location: finalRedirectURL,
     'Set-cookie': `${cookieKey}=${session}; Secure; HttpOnly; SameSite=Lax; Path=/; Expires=${date.toUTCString()}`,
   }
 
@@ -199,7 +217,7 @@ const exchangeCode = async (code: string): Promise<StoredAuthToken> => {
   return {
     accessToken: tokenData.access_token,
     refreshToken: tokenData.refresh_token,
-    expiresAt: getSecondsNow() + tokenData.expires_in - 20 // 20 seconds to account for any possible latency
+    expiresAt: getSecondsNow() + tokenData.expires_in - 20, // 20 seconds to account for any possible latency
   }
 }
 
