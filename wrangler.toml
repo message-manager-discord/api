@@ -21,8 +21,8 @@ kv_namespaces = [
          { binding = "AUTH_STORE", id = "ecd7547a1d714134a743a65d46d07ffa" }
 ]
 routes = [
-  "staging.message.anothercat.me/api*",
-  "staging.message.anothercat.me/auth*"
+  "auth--staging--message.anothercat.me/api*",
+  "auth--staging--message.anothercat.me/auth*"
 ]
 
 [env.production]
@@ -32,6 +32,6 @@ kv_namespaces = [
          { binding = "AUTH_STORE", id = "b2a4ff8173064924b559a09bdc47df4d" }
 ]
 routes = [
-  "message.anothercat.me/api*",
-  "message.anothercat.me/auth*"
+  "auth--message.anothercat.me/api*",
+  "auth--message.anothercat.me/auth*"
 ]
