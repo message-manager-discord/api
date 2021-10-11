@@ -11,14 +11,21 @@ import { CustomStatusError, Unauthorized } from './errors'
 import { getSecondsNow } from './utils'
 
 const productionEnvironment = 'production'
-let allowedOrigins: string[]
+interface allowedOriginType {
+  origin: string
+  wildcard?: boolean
+}
+
+let allowedOrigins: allowedOriginType[]
+
 if (Environment === productionEnvironment) {
-  allowedOrigins = ['https://message.anothercat.me']
+  allowedOrigins = [{origin:'https://message.anothercat.me'}]
 } else {
   allowedOrigins = [
-    'https://message.anothercat.me',
-    'https://staging--message.anothercat.me',
-    'http://localhost:3000',
+    {origin:'https://message.anothercat.me'},
+    {origin:'https://staging--message.anothercat.me'},
+    {origin: "musing-hugle-9b7494.netlify.app", wildcard: true}, // netlify preview deploys 
+    {origin:'http://localhost:3000'},
   ]
 }
 
@@ -31,10 +38,15 @@ const generateCORSHeaders = ({
   methods: string[]
   headers: string[]
 }) => {
-  const foundOrigin = allowedOrigins.find((allowedOrigin) =>
-    origin ? allowedOrigin.includes(origin) : false,
+  const foundOrigin = allowedOrigins.find((allowedOrigin) =>{
+    if (!origin) {
+      return false
+    } else if (allowedOrigin.wildcard) {
+      return origin.includes(allowedOrigin.origin)
+    } else {
+    return allowedOrigin.origin.includes(origin)}},
   )
-  const returnedOrigin = foundOrigin ? foundOrigin : allowedOrigins[0]
+  const returnedOrigin = foundOrigin ? foundOrigin.origin : allowedOrigins[0].origin
   return {
     'Access-Control-Allow-Headers':
       headers.length <= 1 ? headers.join('') : headers.join(', '),
@@ -98,14 +110,7 @@ router.get('/auth/login', async (request: Request): Promise<Response> => {
 router.get(
   '/api/user',
   async (request: Request, context: Context): Promise<Response> => {
-    console.log('HELLO')
-    console.log(
-      generateCORSHeaders({
-        origin: request.headers.get('Origin'),
-        methods: ['GET'],
-        headers: [],
-      }),
-    )
+
     return new Response(JSON.stringify(context.user!.user), {
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +138,11 @@ router.get('/auth/logout', (request: Request): Response => {
   const headers = logout(request)
   return headers
     ? new Response(null, {
-        headers: headers,
+        headers: {...headers, ...generateCORSHeaders({
+          origin: request.headers.get('Origin'),
+          methods: ['GET'], // NOTE: Update this to all methods used here
+          headers: [],
+        })},
         status: 302,
       })
     : Response.redirect(url.origin)
