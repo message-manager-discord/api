@@ -50,13 +50,12 @@ interface FailedResult {
   status: false
   redirectUrl: string
 }
-interface StoredUserData extends RESTGetAPICurrentUserResult {
-  staff: boolean
-}
+
 export interface StoredUser {
-  user: StoredUserData
+  user: RESTGetAPICurrentUserResult
   auth: StoredAuthToken
 }
+
 
 const redirectUrl = (state: string) =>
   `${discordOauth.domain}/authorize?response_type=code&client_id=${
@@ -224,11 +223,9 @@ const exchangeCode = async (code: string): Promise<StoredAuthToken> => {
   }
 }
 
-const checkStaff = (userId: Snowflake): boolean => {
-  return staffIds.includes(`${userId},`)
-}
 
-const identifyUser = async (accessToken: string): Promise<StoredUserData> => {
+
+const identifyUser = async (accessToken: string): Promise<RESTGetAPICurrentUserResult> => {
   const resp = await fetch(`${DISCORD_BASE}/users/@me`, {
     method: 'GET',
     headers: {
@@ -240,7 +237,7 @@ const identifyUser = async (accessToken: string): Promise<StoredUserData> => {
   }
   const data = (await resp.json()) as RESTGetAPICurrentUserResult
 
-  return { staff: checkStaff(data.id), ...data }
+  return data
 }
 
 export const handleRedirect = async (

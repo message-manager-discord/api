@@ -6,9 +6,10 @@ import {
   logout,
   StoredUser,
 } from './oauth2'
-import { Snowflake } from 'discord-api-types/v9'
+import { RESTGetAPICurrentUserResult, Snowflake } from 'discord-api-types/v9'
 import { CustomStatusError, Unauthorized } from './errors'
 import { getSecondsNow } from './utils'
+import { createJWT } from './jwt'
 
 const productionEnvironment = 'production'
 interface allowedOriginType {
@@ -46,7 +47,14 @@ const generateCORSHeaders = ({
     } else {
     return allowedOrigin.origin.includes(origin)}},
   )
-  const returnedOrigin = foundOrigin ? foundOrigin.origin : allowedOrigins[0].origin
+  let returnedOrigin: string
+  if(foundOrigin && foundOrigin.wildcard && origin) {
+    returnedOrigin =  origin
+  } else if (foundOrigin) {
+    returnedOrigin =  foundOrigin.origin
+  } else {
+    returnedOrigin = allowedOrigins[0].origin
+  }
   return {
     'Access-Control-Allow-Headers':
       headers.length <= 1 ? headers.join('') : headers.join(', '),
@@ -106,12 +114,26 @@ router.get('/auth/login', async (request: Request): Promise<Response> => {
   }
 })
 
+interface UserWithStaff extends RESTGetAPICurrentUserResult {
+  staff?: true
+}
+
+
+const checkStaff = (userId: Snowflake): boolean => {
+  return staffIds.includes(`${userId},`)
+}
+
 // user must will always be StoredUser because it's checked in requireUser
 router.get(
   '/api/user',
   async (request: Request, context: Context): Promise<Response> => {
-
-    return new Response(JSON.stringify(context.user!.user), {
+    let user: UserWithStaff = context.user!.user
+    const staff = checkStaff(user.id)
+    if (staff) {
+      user = {...user, staff: staff}
+    }
+    const jwtToken = await createJWT(user.id, user.staff)
+    return new Response(JSON.stringify({...user, token: jwtToken}), {
       headers: {
         'Content-Type': 'application/json',
         ...generateCORSHeaders({

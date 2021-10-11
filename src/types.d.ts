@@ -14,4 +14,6 @@ declare global {
   const Environment: string
   // Staff Ids, string in the form "staff-1-id,staff-2-id" etc
   const staffIds: string
+  // Private key used for signing this is a ECDSA prime256v1 key
+  const privateSigningKey: string
 }
