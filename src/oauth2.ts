@@ -18,7 +18,7 @@ switch (Environment) {
     baseURL = 'http://localhost:8787'
     break
   case 'staging':
-    finalRedirectURL = 'https://staging--message.anothercat.me'
+    finalRedirectURL = 'https://staging--musing-hugle-9b7494.netlify.app/'
     baseURL = 'https://auth--staging--message.anothercat.me'
     break
   default:
@@ -151,7 +151,7 @@ const persistAuth = async (body: StoredAuthToken): Promise<ResponseInit> => {
 
   const headers = {
     Location: finalRedirectURL,
-    'Set-cookie': `${cookieKey}=${session}; Secure; HttpOnly; SameSite=Lax; Path=/; Expires=${date.toUTCString()}`,
+    'Set-cookie': `${cookieKey}=${session}; Secure; HttpOnly; SameSite=None; Path=/; Expires=${date.toUTCString()}`,
   }
 
   return { headers, status: 302 }
@@ -267,7 +267,7 @@ export const logout = (request: Request): Record<string, string> => {
   if (cookieHeader && cookieHeader.includes(cookieKey)) {
     return {
       Location: finalRedirectURL,
-      'Set-cookie': `${cookieKey}=""; SameSite=Lax; Path=/; Secure;`,
+      'Set-cookie': `${cookieKey}=""; SameSite=None; Path=/; Secure;`,
     }
   }
   return { Location: finalRedirectURL }
