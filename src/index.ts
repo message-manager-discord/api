@@ -139,7 +139,7 @@ router.get(
         ...generateCORSHeaders({
           origin: request.headers.get('Origin'),
           methods: ['GET'],
-          headers: [],
+          headers: ["Cookie"],
         }),
       },
     })
@@ -150,7 +150,7 @@ router.options('/api/user', async (request: Request): Promise<Response> => {
     headers: generateCORSHeaders({
       origin: request.headers.get('Origin'),
       methods: ['GET'],
-      headers: [],
+      headers: ["Cookie"],
     }),
   })
 })
@@ -163,11 +163,21 @@ router.get('/auth/logout', (request: Request): Response => {
         headers: {...headers, ...generateCORSHeaders({
           origin: request.headers.get('Origin'),
           methods: ['GET'], // NOTE: Update this to all methods used here
-          headers: [],
+          headers: ["Cookie"],
         })},
         status: 302,
       })
     : Response.redirect(url.origin)
+})
+
+router.options('/api/logout', async (request: Request): Promise<Response> => {
+  return new Response('OK', {
+    headers: generateCORSHeaders({
+      origin: request.headers.get('Origin'),
+      methods: ['GET'],
+      headers: ["Cookie"],
+    }),
+  })
 })
 
 router.all('*', () => new Response('Not Found.', { status: 404 }))
@@ -178,7 +188,7 @@ const errorHandler = (error: any): Response => {
     headers = generateCORSHeaders({
       origin: error.request.headers.get('Origin'),
       methods: ['GET'], // NOTE: Update this to all methods used here
-      headers: [],
+      headers: ["Cookie"],
     })
   } else {
     headers = {}
