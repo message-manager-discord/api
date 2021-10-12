@@ -56,7 +56,6 @@ export interface StoredUser {
   auth: StoredAuthToken
 }
 
-
 const redirectUrl = (state: string) =>
   `${discordOauth.domain}/authorize?response_type=code&client_id=${
     discordOauth.clientId
@@ -223,9 +222,9 @@ const exchangeCode = async (code: string): Promise<StoredAuthToken> => {
   }
 }
 
-
-
-const identifyUser = async (accessToken: string): Promise<RESTGetAPICurrentUserResult> => {
+const identifyUser = async (
+  accessToken: string,
+): Promise<RESTGetAPICurrentUserResult> => {
   const resp = await fetch(`${DISCORD_BASE}/users/@me`, {
     method: 'GET',
     headers: {

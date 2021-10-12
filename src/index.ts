@@ -20,13 +20,13 @@ interface allowedOriginType {
 let allowedOrigins: allowedOriginType[]
 
 if (Environment === productionEnvironment) {
-  allowedOrigins = [{origin:'https://message.anothercat.me'}]
+  allowedOrigins = [{ origin: 'https://message.anothercat.me' }]
 } else {
   allowedOrigins = [
-    {origin:'https://message.anothercat.me'},
-    {origin:'https://staging--message.anothercat.me'},
-    {origin: "musing-hugle-9b7494.netlify.app", wildcard: true}, // netlify preview deploys 
-    {origin:'http://localhost:3000'},
+    { origin: 'https://message.anothercat.me' },
+    { origin: 'https://staging--message.anothercat.me' },
+    { origin: 'musing-hugle-9b7494.netlify.app', wildcard: true }, // netlify preview deploys
+    { origin: 'http://localhost:3000' },
   ]
 }
 
@@ -39,19 +39,20 @@ const generateCORSHeaders = ({
   methods: string[]
   headers: string[]
 }) => {
-  const foundOrigin = allowedOrigins.find((allowedOrigin) =>{
+  const foundOrigin = allowedOrigins.find((allowedOrigin) => {
     if (!origin) {
       return false
     } else if (allowedOrigin.wildcard) {
       return origin.includes(allowedOrigin.origin)
     } else {
-    return allowedOrigin.origin.includes(origin)}},
-  )
+      return allowedOrigin.origin.includes(origin)
+    }
+  })
   let returnedOrigin: string
-  if(foundOrigin && foundOrigin.wildcard && origin) {
-    returnedOrigin =  origin
+  if (foundOrigin && foundOrigin.wildcard && origin) {
+    returnedOrigin = origin
   } else if (foundOrigin) {
-    returnedOrigin =  foundOrigin.origin
+    returnedOrigin = foundOrigin.origin
   } else {
     returnedOrigin = allowedOrigins[0].origin
   }
@@ -75,6 +76,7 @@ const router = Router()
 // withUser modifies original request, but returns nothing
 const withUser = async (request: Request, context: Context): Promise<void> => {
   const authResult = await authorize(request, false)
+
   if (authResult.status) {
     context.user = authResult.user
     context.userId = authResult.user.user.id
@@ -118,7 +120,6 @@ interface UserWithStaff extends RESTGetAPICurrentUserResult {
   staff?: true
 }
 
-
 const checkStaff = (userId: Snowflake): boolean => {
   return staffIds.includes(`${userId},`)
 }
@@ -130,16 +131,18 @@ router.get(
     let user: UserWithStaff = context.user!.user
     const staff = checkStaff(user.id)
     if (staff) {
-      user = {...user, staff: staff}
+      user = { ...user, staff: staff }
     }
+
     const jwtToken = await createJWT(user.id, user.staff)
-    return new Response(JSON.stringify({...user, token: jwtToken}), {
+
+    return new Response(JSON.stringify({ ...user, token: jwtToken }), {
       headers: {
         'Content-Type': 'application/json',
         ...generateCORSHeaders({
           origin: request.headers.get('Origin'),
           methods: ['GET'],
-          headers: ["Cookie"],
+          headers: ['Cookie'],
         }),
       },
     })
@@ -150,7 +153,7 @@ router.options('/api/user', async (request: Request): Promise<Response> => {
     headers: generateCORSHeaders({
       origin: request.headers.get('Origin'),
       methods: ['GET'],
-      headers: ["Cookie"],
+      headers: ['Cookie'],
     }),
   })
 })
@@ -160,11 +163,14 @@ router.get('/auth/logout', (request: Request): Response => {
   const headers = logout(request)
   return headers
     ? new Response(null, {
-        headers: {...headers, ...generateCORSHeaders({
-          origin: request.headers.get('Origin'),
-          methods: ['GET'], // NOTE: Update this to all methods used here
-          headers: ["Cookie"],
-        })},
+        headers: {
+          ...headers,
+          ...generateCORSHeaders({
+            origin: request.headers.get('Origin'),
+            methods: ['GET'], // NOTE: Update this to all methods used here
+            headers: ['Cookie'],
+          }),
+        },
         status: 302,
       })
     : Response.redirect(url.origin)
@@ -175,7 +181,7 @@ router.options('/api/logout', async (request: Request): Promise<Response> => {
     headers: generateCORSHeaders({
       origin: request.headers.get('Origin'),
       methods: ['GET'],
-      headers: ["Cookie"],
+      headers: ['Cookie'],
     }),
   })
 })
@@ -188,7 +194,7 @@ const errorHandler = (error: any): Response => {
     headers = generateCORSHeaders({
       origin: error.request.headers.get('Origin'),
       methods: ['GET'], // NOTE: Update this to all methods used here
-      headers: ["Cookie"],
+      headers: ['Cookie'],
     })
   } else {
     headers = {}

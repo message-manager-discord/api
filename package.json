@@ -3,6 +3,7 @@
   "description": "API for the message manager discord bot",
   "main": "dist/worker.js",
   "scripts": {
+    "dev": "wrangler dev",
     "build": "webpack",
     "format": "prettier --write  '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
     "lint": "eslint --max-warnings=0 src && prettier --check '*.{json,js}' 'src/**/*.{js,ts}' 'test/**/*.{js,ts}'",
@@ -39,6 +40,7 @@
   },
   "dependencies": {
     "cookie": "^0.4.1",
-    "itty-router": "^2.4.2"
+    "itty-router": "^2.4.2",
+    "jose": "^3.20.1"
   }
 }
